@@ -12,7 +12,8 @@ def index(request):
     }
     return render(request, 'women/index.html', context=context)
 
-def show_category(request, cat_id):
+def show_category(request, cat_slug):
+    cat_id = Category.objects.filter(slug=cat_slug)[0].pk
     posts = Women.objects.filter(cat_id=cat_id)
     if len(posts) == 0:
         raise Http404()
@@ -36,8 +37,6 @@ def show_post(request, post_slug):
 def about(request):
     return render(request, 'women/about.html')
 
-def addpage(request):
-    return HttpResponse("Добавление статьи")
 
 def contact(request):
     return HttpResponse("Обратная связь")
