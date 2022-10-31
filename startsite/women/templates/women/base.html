@@ -19,13 +19,7 @@
 			<ul id="mainmenu" class="mainmenu">
 			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
 
-{% for m in menu %}
-	{% if not forloop.last %}
-			<li><a href="{% url m.url_name %}">{{m.title}}</a></li>
-	{% else %}
-			<li class="last"><a href="{% url m.url_name %}">{{m.title}}</a></li>
-	{% endif %}
-{% endfor %}
+{% main_menu %}
 			</ul>
 			<div class="clear"></div>
 		</div>
@@ -53,6 +47,7 @@
 	</ul>
 </td>
 <!-- Конец Sidebar'а -->
+
 <td valign="top" class="content">
 	<!-- Хлебные крошки -->
 	{% block breadcrumbs %}

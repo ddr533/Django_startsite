@@ -3,6 +3,11 @@ from women.models import *
 
 register = template.Library()
 
+menu = [{'title': "О сайте", 'url_name': 'about'},
+        {'title': "Добавить статью", 'url_name': 'add_page'},
+        {'title': "Обратная связь", 'url_name': 'contact'},
+        {'title': "Войти", 'url_name': 'login'}]
+
 @register.simple_tag()
 def get_categories():
     return Category.objects.all()
@@ -16,3 +21,7 @@ def show_categories(sort=None, cat_selected=0):
         cats = Category.objects.order_by(sort)
 
     return {"cats": cats, "cat_selected": cat_selected}
+
+@register.inclusion_tag('women/main_menu.html')
+def main_menu():
+    return {"menu": menu}
