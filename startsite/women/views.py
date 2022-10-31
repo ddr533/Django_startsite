@@ -6,7 +6,7 @@ from women.models import *
 
 
 def index(request):
-    posts = Women.objects.all()
+    posts = Women.objects.all().order_by('-time_create')
     context = {
         'posts': posts,
         'title': 'Главная страница',
@@ -16,7 +16,7 @@ def index(request):
 
 def show_category(request, cat_slug):
     cat_id = Category.objects.filter(slug=cat_slug)[0].pk
-    posts = Women.objects.filter(cat_id=cat_id)
+    posts = Women.objects.filter(cat_id=cat_id).order_by('-time_create')
     if len(posts) == 0:
         raise Http404()
     context = {
@@ -36,19 +36,27 @@ def show_post(request, post_slug):
     }
     return render(request, 'women/post.html', context=context)
 
+# def addpage(request):
+#     if request.method == 'POST':
+#         form = AddPostForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             try:
+#                 Women.objects.create(**form.cleaned_data)
+#                 return redirect('home')
+#             except:
+#                 form.add_error(None, 'Ошибка добавления поста')
+#     else:
+#         form = AddPostForm()
+#     return render(request, 'women/addpage.html', {'form': form, 'title': 'Добавление статьи'})
+
 def addpage(request):
     if request.method == 'POST':
-        form = AddPostForm(request.POST)
+        form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
-            #print(form.cleaned_data)
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except:
-                form.add_error(None, 'Ошибка добавления поста')
+            form.save()
+            return redirect('home')
     else:
         form = AddPostForm()
-
     return render(request, 'women/addpage.html', {'form': form, 'title': 'Добавление статьи'})
 
 def about(request):
