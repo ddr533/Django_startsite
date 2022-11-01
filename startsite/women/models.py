@@ -17,6 +17,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Women(models.Model):
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     slug = models.SlugField(max_length=255, unique=True, db_index=True, null=True, verbose_name="URL")
