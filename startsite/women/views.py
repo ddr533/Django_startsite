@@ -10,6 +10,7 @@ from women.models import *
 
 
 class WomenHome(ListView):
+    paginate_by = 1
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -25,6 +26,7 @@ class WomenHome(ListView):
 
 
 class WomenCategory(ListView):
+    paginate_by = 1
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
