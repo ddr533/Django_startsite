@@ -19,7 +19,7 @@
 			<ul id="mainmenu" class="mainmenu">
 			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
 
-{% main_menu %}
+{% main_menu request=request %}
 			</ul>
 			<div class="clear"></div>
 		</div>
@@ -38,7 +38,7 @@
                    <li><a href="{% url 'home' %}">Все категории</a></li>
 		{% endif %}
 
-		{% show_categories '-name' cat_selected %}
+		{% show_categories '-name' cat_selected=cat_selected  %}
 
 		<li class="share">
 		<p>Наш канал</p>

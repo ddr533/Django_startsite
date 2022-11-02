@@ -1,4 +1,6 @@
 from django import template
+from django.db.models import Count
+
 from women.models import *
 
 register = template.Library()
@@ -17,13 +19,16 @@ def get_categories():
 @register.inclusion_tag('women/list_categories.html')
 def show_categories(sort=None, cat_selected=0):
     if not sort:
-        cats = Category.objects.all()
+        cats = Category.objects.annotate(Count('women'))
     else:
-        cats = Category.objects.order_by(sort)
+        cats = Category.objects.annotate(Count('women')).order_by(sort)
 
     return {"cats": cats, "cat_selected": cat_selected}
 
 
 @register.inclusion_tag('women/main_menu.html')
-def main_menu():
-    return {"menu": menu}
+def main_menu(request):
+    user_menu = menu.copy()
+    if not request.user.is_authenticated:
+        user_menu.pop(1)
+    return {"menu": user_menu}

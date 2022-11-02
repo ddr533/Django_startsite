@@ -3,6 +3,7 @@ from .views import *
 import re
 
 """Class View"""
+
 urlpatterns = [
     path('', WomenHome.as_view(), name='home'),
     path('about/', about, name='about'),
