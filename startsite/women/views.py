@@ -27,7 +27,7 @@ class WomenHome(ListView):
         return context
 
     def get_queryset(self):
-        return Women.objects.filter(is_published=True).order_by('-time_create')
+        return Women.objects.filter(is_published=True).order_by('-time_create').select_related('cat')
 
 
 class WomenCategory(ListView):
@@ -38,12 +38,13 @@ class WomenCategory(ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).order_by('-time_create')
+        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).order_by('-time_create').select_related('cat')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Категория - ' + str(context['posts'][0].cat)
-        context['cat_selected'] = context['posts'][0].cat_id
+        с = context['posts'][0]
+        context['title'] = 'Категория - ' + str(с.cat)
+        context['cat_selected'] = с.cat_id
         return context
 
 
