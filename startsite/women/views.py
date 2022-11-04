@@ -1,16 +1,21 @@
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
-from women.forms import AddPostForm
+from women.forms import AddPostForm, RegisterUserForm, LoginUserForm
 from women.models import *
+from women.utils import DataMixin
 
 """Class view"""
 
 
 class WomenHome(ListView):
-    paginate_by = 1
+    paginate_by = 2
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -26,7 +31,7 @@ class WomenHome(ListView):
 
 
 class WomenCategory(ListView):
-    paginate_by = 1
+    paginate_by = 2
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -40,6 +45,35 @@ class WomenCategory(ListView):
         context['title'] = 'Категория - ' + str(context['posts'][0].cat)
         context['cat_selected'] = context['posts'][0].cat_id
         return context
+
+
+class RegisterUser(DataMixin, CreateView):
+    form_class = RegisterUserForm
+    template_name = 'women/register.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Регистрация")
+        return dict(list(context.items()) + list(c_def.items()))
+
+
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'women/login.html'
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Авторизация")
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 class ShowPost(DetailView):
@@ -124,17 +158,21 @@ class AddPage(LoginRequiredMixin, CreateView):
 #         form = AddPostForm()
 #     return render(request, 'women/addpage.html', {'form': form, 'title': 'Добавление статьи'})
 #
-#
+
+## def login(request):
+#     return HttpResponse("Авторизация")
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
+
+
 def about(request):
     return render(request, 'women/about.html')
 
 
 def contact(request):
     return HttpResponse("Обратная связь")
-
-
-def login(request):
-    return HttpResponse("Авторизация")
 
 
 def categories(request, cat):

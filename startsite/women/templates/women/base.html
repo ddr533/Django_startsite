@@ -20,9 +20,14 @@
 			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
 
 {% main_menu request=request %}
+				<li class="last">
+					{% if request.user.is_authenticated %}
+						<li class="last"> {{user.username}} | <a href="{% url 'logout' %}">Выйти</a></li>
+					{% else %}
+						<li class="last"><a href="{% url 'register' %}">Регистрация</a> | <a href="{% url 'login' %}">Войти</a></li>
+					{% endif %}
+				</li>
 			</ul>
-			<div class="clear"></div>
-		</div>
 {% endblock mainmenu %}
 
 
