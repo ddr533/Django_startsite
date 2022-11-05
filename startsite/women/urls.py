@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 from .views import *
 import re
+from django.views.decorators.cache import cache_page
 
 """Class View"""
 

@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.cache import cache
 
 from women.forms import AddPostForm, RegisterUserForm, LoginUserForm
 from women.models import *
@@ -27,7 +28,11 @@ class WomenHome(ListView):
         return context
 
     def get_queryset(self):
-        return Women.objects.filter(is_published=True).order_by('-time_create').select_related('cat')
+        objs = cache.get('objs')
+        if not objs:
+            objs = Women.objects.filter(is_published=True).order_by('-time_create').select_related('cat')
+            cache.set('cats', objs, 60)
+        return objs
 
 
 class WomenCategory(ListView):
@@ -38,7 +43,12 @@ class WomenCategory(ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).order_by('-time_create').select_related('cat')
+        objs = cache.get('objs')
+        if not objs:
+            objs = Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).order_by(
+                '-time_create').select_related('cat')
+            cache.set('cats', objs, 60)
+        return objs
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -102,6 +112,7 @@ class AddPage(LoginRequiredMixin, CreateView):
 
 
 """Function view"""
+
 
 # def index(request):
 #     posts = Women.objects.all().order_by('-time_create')
